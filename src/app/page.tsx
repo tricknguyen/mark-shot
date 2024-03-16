@@ -5,6 +5,8 @@ import { ImageHandler } from "@/components/ImageHandler";
 import { Settings } from "@/components/Settings";
 import { useRef } from "react";
 import * as htmlToImage from "html-to-image";
+import { Provider } from "jotai";
+import { settingsStore } from "@/store/SettingStore";
 
 export default function Home() {
   const domEl = useRef(null);
@@ -21,16 +23,18 @@ export default function Home() {
   }
 
   return (
-    <main className="container py-3">
+    <main className="container py-3 100vh">
       <div className="grid">
 
         <div className="grid items-stretch gap-6 grid-cols-4">
-          <div className="col-span-1">
-            <Settings />
-          </div>
-          <div className="col-span-3">
-            <ImageHandler domEl={domEl} />
-          </div>
+          <Provider store={settingsStore}>
+            <div className="col-span-1 border-r ">
+              <Settings />
+            </div>
+            <div className="col-span-3 border">
+              <ImageHandler domEl={domEl} />
+            </div>
+          </Provider>
         </div>
 
         <div className="flex justify-end mt-4 h-1/2">

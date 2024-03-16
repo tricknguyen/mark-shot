@@ -4,10 +4,10 @@ interface Color {
 }
 
 export interface Setting {
-	backgroundColor: Color,
-	padding: number,
-	corner: number,
-	shadow: any
+	backgroundColor?: Color,
+	padding?: number,
+	corner?: number,
+	shadow?: any
 }
 
 interface Image {

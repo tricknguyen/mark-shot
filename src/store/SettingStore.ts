@@ -1,7 +1,6 @@
 import { Setting } from "@/models/Setting";
 import { atom, createStore } from "jotai";
 
-export const settingStore = createStore();
+export const settingAttom = atom({} as Setting);
 
-const settingAttom = atom({} as Setting);
-settingStore.set
+export const settingsStore = createStore();

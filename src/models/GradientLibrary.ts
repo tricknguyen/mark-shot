@@ -1,3 +1,5 @@
+import { ColorGradient } from "./ColorGradient"
+
 export const GradientLibrary = {
     Roseanna: ["#ffafbd", "#ffc3a0"],
     SexyBlue: ["#2193b0", "#6dd5ed"],
@@ -5,11 +7,6 @@ export const GradientLibrary = {
     Piglet: ["#ee9ca7", "#ffdde1"],
     Mauve: ["#42275a", "#734b6d"],
     ShadesOfGrey: ["#bdc3c7", "#2c3e50"],
-}
-
-export interface ColorGradient {
-    from: string;
-    to: string;
 }
 
 export const colors: Array<ColorGradient> = [
