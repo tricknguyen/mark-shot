@@ -48,32 +48,30 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
     useEffect(() => {
         const handlePasteEvent = (event: ClipboardEvent) => handlePaste(event);
         window.addEventListener("paste", handlePasteEvent);
-    
+
         return () => window.removeEventListener("paste", handlePasteEvent);
-      }, []);
+    }, []);
 
     return <div className="p-4 h-[80vh] flex flex-col justify-center">
-        <div id="domEl" ref={domEl}>
-            <div id="wrapper" className="w-full flex-row items-center p-5 h-full flex justify-center">
-                <div style={{
-                    backgroundImage: settings.backgroundColor?.value,
-                    padding: settings.padding ? settings.padding : 40,
-                }} id="wrapper_img">
-                    {
-                        !image ? <>
-                            <Label htmlFor="inputImage">Picture</Label>
-                            <Input id="inputImage" type="file" accept="image/*" onChange={handleChange} />
-                        </> : <Image id="image" src={image} alt="Picture of the author"
-                            style={{
-                                borderRadius: `${settings.corner}px`,
-                                boxShadow: `rgb(0 0 0 / 35%) 0px ${settings.shadow + 15}px ${settings.shadow + 25}px`,
-                                objectFit: "cover"
-                            }}
-                            width={700}
-                            height={500}
-                        />
-                    }
-                </div>
+        <div id="wrapper" className="w-full flex-row items-center p-5 h-full flex justify-center">
+            <div style={{
+                backgroundImage: settings.backgroundColor?.value,
+                padding: settings.padding ? settings.padding : 40,
+            }} id="domEl" ref={domEl}>
+                {
+                    !image ? <>
+                        <Label htmlFor="inputImage">Picture</Label>
+                        <Input id="inputImage" type="file" accept="image/*" onChange={handleChange} />
+                    </> : <Image id="image" src={image} alt="Picture of the author"
+                        style={{
+                            borderRadius: `${settings.corner}px`,
+                            boxShadow: `rgb(0 0 0 / 35%) 0px ${settings.shadow + 15}px ${settings.shadow + 25}px`,
+                            objectFit: "cover"
+                        }}
+                        width={700}
+                        height={500}
+                    />
+                }
             </div>
         </div>
     </div>
