@@ -37,7 +37,6 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
             reader.readAsDataURL(blob);
             reader.onloadend = () => {
                 if (!image) {
-                    debugger;
                     const dataURL = reader.result;
                     setImage(dataURL as string)
                 }
@@ -56,7 +55,7 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
         <div id="wrapper" className="w-full flex-row items-center p-5 h-full flex justify-center">
             <div style={{
                 backgroundImage: settings.backgroundColor?.value,
-                padding: settings.padding ? settings.padding : 40,
+                padding: settings.padding ? settings.padding : 40
             }} id="domEl" ref={domEl}>
                 {
                     !image ? <>
@@ -68,7 +67,7 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
                             boxShadow: `rgb(0 0 0 / 35%) 0px ${settings.shadow + 15}px ${settings.shadow + 25}px`,
                             objectFit: "cover"
                         }}
-                        width={700}
+                        width={1200}
                         height={500}
                     />
                 }

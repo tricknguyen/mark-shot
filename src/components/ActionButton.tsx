@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { CheckIcon } from "@radix-ui/react-icons";
 interface ActionButtonProps {
-    onExport?: () => void;
-    onCopy?: () => void;
+    onExport: () => void;
+    onCopy: () => void;
 }
 
 export function ActionButton({ onExport, onCopy }: ActionButtonProps) {
@@ -14,7 +14,7 @@ export function ActionButton({ onExport, onCopy }: ActionButtonProps) {
             <Button className="mr-2" onClick={onExport}>Export</Button>
             <Button className="ml-2" variant="outline" onClick={() => {
                 setIsCopied(true);
-                onCopy;
+                onCopy();
             }}>
                 {
                     isCopied ? <><CheckIcon /> Copied</> : "Copy"
