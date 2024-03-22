@@ -58,15 +58,14 @@ export default function Home() {
   }
 
   return (
-    <main className="container py-3 100vh">
-      <div className="grid">
-
-        <div className="grid items-stretch gap-6 grid-cols-4">
+    <main className="py-3 h-[100vh]">
+      <div className="grid h-full mx-2">
+        <div className="grid items-stretch gap-6 grid-cols-5">
           <Provider store={settingsStore}>
             <div className="col-span-1 border-r ">
               <Settings />
             </div>
-            <div className="col-span-3 border">
+            <div className="col-span-4 border">
               <ImageHandler domEl={domEl} />
             </div>
           </Provider>

@@ -4,6 +4,7 @@ import { Slider } from "./ui/slider";
 import { useAtom } from "jotai";
 import { settingAttom } from "@/store/SettingStore";
 import { ColorGradient } from "@/models/ColorGradient";
+import { Button } from "./ui/button";
 
 export function Settings() {
     const [settings, setSettings] = useAtom(settingAttom);
@@ -28,10 +29,14 @@ export function Settings() {
     }
 
     return (
-        <div className="py-4 lg:block">
-            {/* Setting */}
-            <div className="px-3 py-2 border-b">
-                <span className="text-lg font-semibold mb-2">Background</span>
+        <div className="py-4 px-2 lg:block">
+            
+            <Button className="w-full">None</Button>
+
+            <div className="py-2 border-b">
+                <h3 className="font-semibold leading-none tracking-tight">
+                    Gradient
+                </h3>
                 <div className="grid grid-cols-3 pt-2">
                     {
                         colors.map((color, index) => {
