@@ -1,16 +1,15 @@
 import { ChangeEvent, MutableRefObject, useEffect, useState } from "react";
-import Image from "next/image";
 import { useAtom } from "jotai";
-import { settingAttom } from "@/store/SettingStore";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
+import { settingAtom } from "@/store/SettingStore";
 
 interface ImageHandlerProp {
     domEl?: MutableRefObject<null>
 }
 
 export function ImageHandler({ domEl }: ImageHandlerProp) {
-    const [settings] = useAtom(settingAttom);
+    const [settings] = useAtom(settingAtom);
     const [image, setImage] = useState<string | null>(null);
 
     function handleChange(e: ChangeEvent<HTMLInputElement>) {
@@ -61,15 +60,13 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
                     !image ? <>
                         <Label htmlFor="inputImage">Picture</Label>
                         <Input id="inputImage" type="file" accept="image/*" onChange={handleChange} />
-                    </> : <Image id="image" src={image} alt="Picture of the author"
-                        style={{
-                            borderRadius: `${settings.corner}px`,
-                            boxShadow: `rgb(0 0 0 / 35%) 0px ${settings.shadow + 15}px ${settings.shadow + 25}px`,
-                            objectFit: "cover"
-                        }}
-                        width={1200}
-                        height={500}
-                    />
+                    </> : <img id="image" src={image} alt="Picture of the author"
+                            style={{
+                                borderRadius: `${settings.corner}px`,
+                                boxShadow: `rgb(0 0 0 / 35%) 0px ${settings.shadow + 15}px ${settings.shadow + 25}px`,
+                                objectFit: "cover"
+                            }}
+                        />
                 }
             </div>
         </div>
