@@ -58,7 +58,6 @@ export default function Home() {
   }
 
   return (
-    <main className="py-3 h-[100vh]">
       <div className="grid h-full mx-2">
         <div className="grid items-stretch gap-6 grid-cols-5">
           <Provider store={settingsStore}>
@@ -70,11 +69,9 @@ export default function Home() {
             </div>
           </Provider>
         </div>
-
         <div className="flex justify-end mt-4 h-1/2">
           <ActionButton onExport={handleExportImage} onCopy={handleCopyImageToClipBoard} />
         </div>
       </div>
-    </main>
   );
 }

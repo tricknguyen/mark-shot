@@ -3,7 +3,7 @@ import { Slider } from "./ui/slider";
 import { useAtom } from "jotai";
 import { ColorGradient } from "@/models/ColorGradient";
 import { Button } from "./ui/button";
-import { Plus } from 'lucide-react';
+import { Plus } from "lucide-react";
 import { settingAtom } from "@/store/SettingStore";
 
 export function Settings() {

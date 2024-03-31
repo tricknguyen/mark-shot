@@ -18,7 +18,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
-      <body >{children}</body>
+      <body>
+        <main className="py-3 h-[100vh]">
+          {children}
+        </main>
+      </body>
     </html>
   );
 }
