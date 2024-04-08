@@ -5,10 +5,12 @@ import { ColorGradient } from "@/models/ColorGradient";
 import { Button } from "./ui/button";
 import { Plus } from "lucide-react";
 import { settingAtom } from "@/store/SettingStore";
+import { useRouter } from "next/navigation";
 
 export function Settings() {
     const [settings, setSettings] = useAtom(settingAtom);
-
+    const router = useRouter();
+    
     function onSelectColor(color: ColorGradient) {
         setSettings({
             ...settings, backgroundColor: {
@@ -31,6 +33,8 @@ export function Settings() {
     }
 
     function renderGradientSetting() {
+        
+
         return <div className="py-2 border-b">
             <h3 className="font-semibold leading-none tracking-tight">
                 Gradient
@@ -52,6 +56,9 @@ export function Settings() {
                         className="w-[50px] h-[50px] mb-2"
                         variant="outline"
                         size="icon"
+                        onClick={() => {
+                            router.push("/settingcolor");
+                        }}
                     >
                         <Plus />
                     </Button>
