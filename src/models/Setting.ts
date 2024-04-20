@@ -3,15 +3,9 @@ interface Color {
 	value: string
 }
 
-export interface Setting {
+export interface SettingImage {
 	backgroundColor?: Color,
 	padding?: number,
 	corner?: number,
 	shadow?: any
-}
-
-interface Image {
-	originalImage: any,
-	backgroundImage: any,
-	setting: Setting
 }

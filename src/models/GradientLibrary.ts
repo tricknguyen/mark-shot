@@ -35,3 +35,8 @@ export const colors: Array<ColorGradient> = [
         to: "2c3e50"
     },
 ]
+
+export const DefaultSettingColor = {
+    Red: "#ff0000",
+    Yellow: "#faff00"
+}
