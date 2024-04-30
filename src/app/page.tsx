@@ -58,10 +58,10 @@ export default function Home() {
   }
 
   return (
-      <div className="grid h-full mx-2">
+      <div className="grid h-full">
         <div className="grid items-stretch gap-6 grid-cols-5">
           <Provider store={settingsStore}>
-            <div className="col-span-1 border-r ">
+            <div className="col-span-1 border">
               <Settings />
             </div>
             <div className="col-span-4 border">

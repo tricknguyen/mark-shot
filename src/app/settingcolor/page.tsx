@@ -3,69 +3,81 @@
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, Dices, X } from "lucide-react";
+import { Utils } from "@/utils/ConvertColor";
+import { ChevronLeft, Dices, Plus, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { HexColorPicker } from "react-colorful";
 
 interface ColorSectionProps {
-    color?: string,
+    modelValue?: string,
+    onUpdatedModelValue?: (val: string) => void;
     disabled?: boolean
 }
 
-function ColorSelection({ color = "#000066", disabled = false }: ColorSectionProps) {
-    const [isHoverEle, setHoverEle] = useState(false);
-    const [backgroundColor, setBackgroundColor] = useState(color);
+function ColorPicker({ modelValue, onUpdatedModelValue }: ColorSectionProps) {
 
-    if (disabled) {
-        return <Button
-            className="w-full h-full aspect-square border-4 border-solid border-slate-500 hover:border-slate-950 p-0 bg-white hover:bg-white z-10"
-            disabled
-        />
-    }
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <div className="relative"
-                    onMouseOver={() => {
-                        setHoverEle(true);
-                    }}
-                    onMouseOut={() => {
-                        setHoverEle(false);
-                    }}>
+    return (<div className="flex flex-col">
+        <div className="grid grid-rows-1">
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
                     <Button
-                        className="relative w-full h-full aspect-square border-4 border-solid border-slate-500 hover:border-slate-950 p-0 bg-white hover:bg-white z-10"
+                        className="w-full h-full aspect-square border-4 border-solid border-slate-500 hover:border-slate-950 p-0 bg-white hover:bg-white z-10"
                     >
-                        <div style={{
-                            backgroundColor: backgroundColor,
-                            width: "calc(100% - 4px)",
-                            height: "calc(100% - 4px)",
-                        }} ></div>
+                        {
+                            modelValue ? <div style={{
+                                width: "calc(100% - 4px)",
+                                height: "calc(100% - 4px)",
+                                backgroundColor: modelValue,
+                            }} ></div> : <Plus className="text-black" />
+                        }
                     </Button>
-                    <div id="cancel" className="absolute inset-x-0 bottom-0 flex justify-center items-center z-0 hover:origin-top" style={{
-                        animation: "300ms ease 0s 1 normal none running jgQpwH",
-                        transition: "opacity 200ms ease 0s, transform 300ms ease 0s",
-                        transform: isHoverEle ? "translateY(40px)" : ""
-                    }}>
-                        <Button variant="ghost" size="icon" className="p-0 hover:bg-none">
-                            <X />
-                        </Button>
-                    </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="p-2">
+                    <Input placeholder="color" className="text-center pr-0 mb-2" value={modelValue} onChange={(val) => { onUpdatedModelValue?.(val.target.value); }} />
+                    <HexColorPicker color={modelValue} onChange={(val) => {
+                        if (!val.includes("NaN")) {
+                            onUpdatedModelValue?.(val);
+                        }
+                    }} />
+                </DropdownMenuContent>
+
+            </DropdownMenu>
+        </div>
+        <div className="grid grid-rows-1">
+            {
+                modelValue && <div className="flex justify-center">
+                    <Button variant="ghost" size="icon" className="p-0 hover:bg-none" onClick={() => { onUpdatedModelValue?.(""); }}>
+                        <X />
+                    </Button>
                 </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="p-2">
-                <Input placeholder="color" className="text-center pr-0 mb-2" value={color} onChange={(val) => {setBackgroundColor(val.target.value);}} />
-                <HexColorPicker color={color} onChange={setBackgroundColor} />
-            </DropdownMenuContent>
-        </DropdownMenu>
+            }
+        </div>
+    </div>
     );
 }
 
 export default function Page() {
-    function renderColor() {
-        return <div className="m-2 p-2 rounded-lg border-2 h-full" style={{ maxHeight: "min(860px, 100vh - 64px)" }}>
+    const [colorsBase, setColorsBase] = useState<{
+        [key: string]: any
+    }>({
+        firstColor: "",
+        secondColor: "",
+        thirdColor: "",
+        fourthColor: "",
+        fifthColor: ""
+    });
 
-        </div>;
+    function renderColor() {
+        const values = Object.values(colorsBase).filter((color) => color !== "");
+        const gradienColor = Utils.generateGradient(values);
+        return <div
+            className="h-full m-2 p-2 rounded-3xl border-8 border-slate-500"
+            style={{
+                minHeight: "min(860px, 100vh - 40px)",
+                background: gradienColor
+            }}
+        />;
     }
 
     function renderSetting() {
@@ -83,11 +95,20 @@ export default function Page() {
                         Colors
                     </h3>
                     <div className="grid grid-cols-5 gap-3 pt-2">
-                        <ColorSelection />
-                        <ColorSelection />
-                        <ColorSelection />
-                        <ColorSelection />
-                        <ColorSelection disabled={true}/>
+                        {
+                            Object.keys(colorsBase).map((color, index) => {
+                                return <ColorPicker
+                                    modelValue={colorsBase[color]}
+                                    onUpdatedModelValue={(val) => {
+                                        setColorsBase({
+                                            ...colorsBase,
+                                            [color]: val,
+                                        });
+                                    }}
+                                    key={index}
+                                />
+                            })
+                        }
                     </div>
                 </div>
             </div>
