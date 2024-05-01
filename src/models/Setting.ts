@@ -1,10 +1,5 @@
-interface Color {
-	title: string,
-	value: string
-}
-
 export interface SettingImage {
-	backgroundColor?: Color,
+	backgroundColor?: string,
 	padding?: number,
 	corner?: number,
 	shadow?: any

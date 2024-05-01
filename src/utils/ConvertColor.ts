@@ -16,7 +16,5 @@ export module Utils {
             const gradient = `linear-gradient(${angle}deg, ${colorStops.join(', ')})`;
             return gradient;
         }
-        
-
     }
 }

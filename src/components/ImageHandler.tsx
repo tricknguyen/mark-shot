@@ -53,7 +53,7 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
     return <div className="p-4 h-[80vh] flex flex-col justify-center">
         <div id="wrapper" className="w-full flex-row items-center p-5 h-full flex justify-center">
             <div style={{
-                backgroundImage: settings.backgroundColor?.value,
+                backgroundImage: settings.backgroundColor,
                 padding: settings.padding ? settings.padding : 40
             }} id="domEl" ref={domEl}>
                 {

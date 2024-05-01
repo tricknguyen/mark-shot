@@ -1,23 +1,22 @@
-import { colors } from "@/models/GradientLibrary";
 import { Slider } from "./ui/slider";
 import { useAtom } from "jotai";
-import { ColorGradient } from "@/models/ColorGradient";
 import { Button } from "./ui/button";
 import { Plus } from "lucide-react";
 import { settingAtom } from "@/store/SettingStore";
 import { useRouter } from "next/navigation";
 
-export function Settings() {
+interface SettingsProps {
+    listColor?: Array<string>,
+}
+
+export function Settings({ listColor }: SettingsProps) {
     const [settings, setSettings] = useAtom(settingAtom);
     const router = useRouter();
     
-    function onSelectColor(color: ColorGradient) {
+    function onSelectColor(color: string) {
         setSettings({
-            ...settings, backgroundColor: {
-                title: color.from,
-                value: `linear-gradient(90deg, #${color.from} 0%, #${color.to} 100%)`
-            }
-        })
+            ...settings, backgroundColor: color
+        });
     }
 
     function onSelectPadding(val: number) {
@@ -34,19 +33,20 @@ export function Settings() {
 
     function renderGradientSetting() {
         
-
         return <div className="py-2 border-b">
             <h3 className="font-semibold leading-none tracking-tight">
                 Gradient
             </h3>
             <div className="grid grid-cols-4 pt-2">
                 {
-                    colors.map((color, key) => {
+                    listColor?.map((color, key) => {
                         return <div key={key} className="flex justify-center">
                             <Button
                                 className="w-[50px] h-[50px] mb-2"
-                                style={{ backgroundImage: `linear-gradient(90deg, #${color.from} 0%, #${color.to} 100%)` }}
-                                onClick={() => { onSelectColor(color); }}
+                                style={{ backgroundImage: color }}
+                                onClick={() => { 
+                                    onSelectColor(color); 
+                                }}
                             />
                         </div>
                     })

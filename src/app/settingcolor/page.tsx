@@ -3,19 +3,23 @@
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { colorSettings } from "@/store/SettingStore";
 import { Utils } from "@/utils/ConvertColor";
+import { useAtom } from "jotai";
 import { ChevronLeft, Dices, Plus, X } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { HexColorPicker } from "react-colorful";
 
-interface ColorSectionProps {
+interface ColorPickerProps {
     modelValue?: string,
     onUpdatedModelValue?: (val: string) => void;
-    disabled?: boolean
 }
 
-function ColorPicker({ modelValue, onUpdatedModelValue }: ColorSectionProps) {
+function ColorPicker({ modelValue, onUpdatedModelValue }: ColorPickerProps) {
+    function isValid(val: string) {
+        return !val.includes("NaN");
+    }
 
     return (<div className="flex flex-col">
         <div className="grid grid-rows-1">
@@ -36,7 +40,7 @@ function ColorPicker({ modelValue, onUpdatedModelValue }: ColorSectionProps) {
                 <DropdownMenuContent className="p-2">
                     <Input placeholder="color" className="text-center pr-0 mb-2" value={modelValue} onChange={(val) => { onUpdatedModelValue?.(val.target.value); }} />
                     <HexColorPicker color={modelValue} onChange={(val) => {
-                        if (!val.includes("NaN")) {
+                        if (isValid(val)) {
                             onUpdatedModelValue?.(val);
                         }
                     }} />
@@ -58,6 +62,7 @@ function ColorPicker({ modelValue, onUpdatedModelValue }: ColorSectionProps) {
 }
 
 export default function Page() {
+    const router = useRouter();
     const [colorsBase, setColorsBase] = useState<{
         [key: string]: any
     }>({
@@ -68,14 +73,26 @@ export default function Page() {
         fifthColor: ""
     });
 
+    const [gradientColor, setGradientColor] = useState("");
+
+    const [settingColors, setSettingColors] = useAtom(colorSettings);
+
+    function updateColor(key: string, val: string) {
+        setColorsBase({
+            ...colorsBase,
+            [key]: val
+        });
+        
+        const values = Object.values({...colorsBase, [key]: val}).filter((color) => color !== "");
+        setGradientColor(Utils.generateGradient(values));
+    }
+
     function renderColor() {
-        const values = Object.values(colorsBase).filter((color) => color !== "");
-        const gradienColor = Utils.generateGradient(values);
         return <div
             className="h-full m-2 p-2 rounded-3xl border-8 border-slate-500"
             style={{
                 minHeight: "min(860px, 100vh - 40px)",
-                background: gradienColor
+                background: gradientColor
             }}
         />;
     }
@@ -100,10 +117,7 @@ export default function Page() {
                                 return <ColorPicker
                                     modelValue={colorsBase[color]}
                                     onUpdatedModelValue={(val) => {
-                                        setColorsBase({
-                                            ...colorsBase,
-                                            [color]: val,
-                                        });
+                                        updateColor(color, val);
                                     }}
                                     key={index}
                                 />
@@ -119,21 +133,19 @@ export default function Page() {
         <div className="flex flex-col h-full mx-2">
             <header className="p-4">
                 <div className="flex items-center">
-                    <Link className="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800" href="./">
+                    <Button variant="outline" className="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800" onClick={() => {
+                        setSettingColors([...settingColors, gradientColor]);
+                        router.push("./");
+                    }}>
                         <ChevronLeft />
-                    </Link>
+                    </Button>
                     <h1 className="text-xl font-bold leading-none ml-2">Generator Gradient Color</h1>
                 </div>
             </header>
 
-            {/* Page */}
             <div className="p-4 grid grid-cols-2 gap-9 max-w-[1200px] container">
                 {renderColor()}
                 {renderSetting()}
-            </div>
-
-            <div>
-                {/* Action Button */}
             </div>
         </div>
     )

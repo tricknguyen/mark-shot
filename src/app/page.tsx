@@ -5,11 +5,12 @@ import { ImageHandler } from "@/components/ImageHandler";
 import { Settings } from "@/components/Settings";
 import { useRef, useState } from "react";
 import * as htmlToImage from "html-to-image";
-import { Provider } from "jotai";
-import { settingsStore } from "@/store/SettingStore";
+import { Provider, useAtom } from "jotai";
+import { colorSettings } from "@/store/SettingStore";
 
 export default function Home() {
   const domEl = useRef(null);
+  const [settingColors] = useAtom(colorSettings);
 
   function fetchImageData(imageUrl: string) {
     return new Promise<Blob>((resolve, reject) => {
@@ -58,20 +59,20 @@ export default function Home() {
   }
 
   return (
+    <Provider>
       <div className="grid h-full">
         <div className="grid items-stretch gap-6 grid-cols-5">
-          <Provider store={settingsStore}>
-            <div className="col-span-1 border">
-              <Settings />
-            </div>
-            <div className="col-span-4 border">
-              <ImageHandler domEl={domEl} />
-            </div>
-          </Provider>
+          <div className="col-span-1 border">
+            <Settings listColor={settingColors}/>
+          </div>
+          <div className="col-span-4 border">
+            <ImageHandler domEl={domEl} />
+          </div>
         </div>
         <div className="flex justify-end mt-4 h-1/2">
           <ActionButton onExport={handleExportImage} onCopy={handleCopyImageToClipBoard} />
         </div>
       </div>
+    </Provider>
   );
 }
