@@ -11,6 +11,7 @@ interface ImageHandlerProp {
 export function ImageHandler({ domEl }: ImageHandlerProp) {
     const [settings] = useAtom(settingAtom);
     const [image, setImage] = useState<string | null>(null);
+    const [isImageScalable, setIsImageScalable] = useState(false);
 
     function handleChange(e: ChangeEvent<HTMLInputElement>) {
         const url = e.target.files?.[0];
