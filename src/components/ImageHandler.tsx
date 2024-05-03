@@ -1,4 +1,4 @@
-import { ChangeEvent, MutableRefObject, useEffect, useState } from "react";
+import { ChangeEvent, MutableRefObject, useEffect, useRef, useState } from "react";
 import { useAtom } from "jotai";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
@@ -10,8 +10,13 @@ interface ImageHandlerProp {
 
 export function ImageHandler({ domEl }: ImageHandlerProp) {
     const [settings] = useAtom(settingAtom);
+
     const [image, setImage] = useState<string | null>(null);
+    let width = 0;
     const [isImageScalable, setIsImageScalable] = useState(false);
+
+    const wrapperElementRef = useRef<HTMLDivElement | null>(null);
+    const imageElementRef = useRef<HTMLImageElement | null>(null);
 
     function handleChange(e: ChangeEvent<HTMLInputElement>) {
         const url = e.target.files?.[0];
@@ -38,13 +43,28 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
             reader.onloadend = () => {
                 if (!image) {
                     const dataURL = reader.result;
-                    setImage(dataURL as string)
+                    setImage(dataURL as string);
+
+                    const imageNew = new Image();
+                    imageNew.src = dataURL as string;
+                    imageNew.onload = () => {
+                        debugger;
+                        if (imageNew.width > width) {
+                            setIsImageScalable(true);
+                        } else {
+                            setIsImageScalable(false);
+                        }
+                    }
                 }
             };
         }
     }
 
     useEffect(() => {
+        if (wrapperElementRef.current) {
+            width = wrapperElementRef.current.offsetWidth;
+        }
+
         const handlePasteEvent = (event: ClipboardEvent) => handlePaste(event);
         window.addEventListener("paste", handlePasteEvent);
 
@@ -55,7 +75,8 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
         <div id="wrapper" className="w-full flex-row items-center p-5 h-full flex justify-center">
             <div style={{
                 backgroundImage: settings.backgroundColor,
-                padding: settings.padding ? settings.padding : 40
+                padding: settings.padding ? settings.padding : 40,
+                transform: isImageScalable ? "scale(0.8)" : ""
             }} id="domEl" ref={domEl}>
                 {
                     !image ? <>
@@ -65,7 +86,8 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
                             style={{
                                 borderRadius: `${settings.corner}px`,
                                 boxShadow: `rgb(0 0 0 / 35%) 0px ${settings.shadow + 15}px ${settings.shadow + 25}px`,
-                                objectFit: "cover"
+                                objectFit: "cover",
+                                transform: isImageScalable ? "scale(0.8)" : ""
                             }}
                         />
                 }

@@ -37,7 +37,7 @@ export function Settings({ listColor }: SettingsProps) {
             <h3 className="font-semibold leading-none tracking-tight">
                 Gradient
             </h3>
-            <div className="grid grid-cols-4 pt-2">
+            <div className="grid grid-cols-5 pt-2">
                 {
                     listColor?.map((color, key) => {
                         return <div key={key} className="flex justify-center">
