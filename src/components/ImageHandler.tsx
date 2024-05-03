@@ -12,11 +12,10 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
     const [settings] = useAtom(settingAtom);
 
     const [image, setImage] = useState<string | null>(null);
-    let width = 0;
+    const [widthWrapper, setWidthWrapper] = useState(0);
     const [isImageScalable, setIsImageScalable] = useState(false);
 
     const wrapperElementRef = useRef<HTMLDivElement | null>(null);
-    const imageElementRef = useRef<HTMLImageElement | null>(null);
 
     function handleChange(e: ChangeEvent<HTMLInputElement>) {
         const url = e.target.files?.[0];
@@ -48,8 +47,7 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
                     const imageNew = new Image();
                     imageNew.src = dataURL as string;
                     imageNew.onload = () => {
-                        debugger;
-                        if (imageNew.width > width) {
+                        if (imageNew.width > widthWrapper) {
                             setIsImageScalable(true);
                         } else {
                             setIsImageScalable(false);
@@ -62,7 +60,7 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
 
     useEffect(() => {
         if (wrapperElementRef.current) {
-            width = wrapperElementRef.current.offsetWidth;
+            setWidthWrapper(wrapperElementRef.current?.offsetWidth);
         }
 
         const handlePasteEvent = (event: ClipboardEvent) => handlePaste(event);
