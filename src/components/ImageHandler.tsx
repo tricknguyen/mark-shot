@@ -8,19 +8,25 @@ interface ImageHandlerProp {
     domEl?: MutableRefObject<null>
 }
 
+interface Image {
+    url?: string;
+    width?: number;
+}
+
 export function ImageHandler({ domEl }: ImageHandlerProp) {
     const [settings] = useAtom(settingAtom);
 
-    const [image, setImage] = useState<string | null>(null);
-    const [widthWrapper, setWidthWrapper] = useState(0);
+    const [image, setImage] = useState<Image | null>(null);
     const [isImageScalable, setIsImageScalable] = useState(false);
 
     const wrapperElementRef = useRef<HTMLDivElement | null>(null);
 
-    function handleChange(e: ChangeEvent<HTMLInputElement>) {
-        const url = e.target.files?.[0];
+    function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
+        const url = event.target.files?.[0];
         if (url) {
-            setImage(URL.createObjectURL(url));
+            const reader = new FileReader();
+            reader.readAsDataURL(url);
+            reader.onloadend = () => setImage({ url: reader.result as string });
         }
     }
 
@@ -36,58 +42,51 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
 
         const blob = pastedItem.getAsFile();
 
-        const reader = new FileReader();
         if (blob) {
+            const reader = new FileReader();
             reader.readAsDataURL(blob);
             reader.onloadend = () => {
                 if (!image) {
-                    const dataURL = reader.result;
-                    setImage(dataURL as string);
-
+                    const dataURL = reader.result as string;
                     const imageNew = new Image();
-                    imageNew.src = dataURL as string;
+                    imageNew.src = dataURL;
                     imageNew.onload = () => {
-                        if (imageNew.width > widthWrapper) {
-                            setIsImageScalable(true);
-                        } else {
-                            setIsImageScalable(false);
-                        }
-                    }
+                        const imageWidth = imageNew.width;
+                        setImage({ url: dataURL, width: imageWidth });
+                        const shouldScale = (imageWidth > (wrapperElementRef.current?.offsetWidth || 0)) || (imageNew.height > (wrapperElementRef.current?.offsetHeight || 0));
+                        setIsImageScalable(shouldScale);
+                    };
                 }
             };
         }
     }
 
     useEffect(() => {
-        if (wrapperElementRef.current) {
-            setWidthWrapper(wrapperElementRef.current?.offsetWidth);
-        }
-
         const handlePasteEvent = (event: ClipboardEvent) => handlePaste(event);
         window.addEventListener("paste", handlePasteEvent);
-
         return () => window.removeEventListener("paste", handlePasteEvent);
-    }, []);
+    }, [wrapperElementRef, image]);
 
     return <div className="p-4 h-[80vh] flex flex-col justify-center">
-        <div id="wrapper" className="w-full flex-row items-center p-5 h-full flex justify-center">
+        <div id="wrapper" className="w-full flex-row items-center p-5 h-full flex justify-center" ref={wrapperElementRef}>
             <div style={{
                 backgroundImage: settings.backgroundColor,
                 padding: settings.padding ? settings.padding : 40,
-                transform: isImageScalable ? "scale(0.8)" : ""
             }} id="domEl" ref={domEl}>
                 {
                     !image ? <>
                         <Label htmlFor="inputImage">Picture</Label>
-                        <Input id="inputImage" type="file" accept="image/*" onChange={handleChange} />
-                    </> : <img id="image" src={image} alt="Picture of the author"
-                            style={{
-                                borderRadius: `${settings.corner}px`,
-                                boxShadow: `rgb(0 0 0 / 35%) 0px ${settings.shadow + 15}px ${settings.shadow + 25}px`,
-                                objectFit: "cover",
-                                transform: isImageScalable ? "scale(0.8)" : ""
-                            }}
-                        />
+                        <Input id="inputImage" type="file" accept="image/*" onChange={handleImageChange} />
+                    </> : <img id="image" src={image.url} alt="Picture of the author"
+                        style={{
+                            borderRadius: `${settings.corner}px`,
+                            boxShadow: `rgb(0 0 0 / 35%) 0px ${settings.shadow + 15}px ${settings.shadow + 25}px`,
+                            objectFit: "cover",
+                            display: isImageScalable ? "inline-block" : "block",
+                            width: isImageScalable ? "300px" : "",
+                            height: isImageScalable ? "auto" : "",
+                        }}
+                    />
                 }
             </div>
         </div>
