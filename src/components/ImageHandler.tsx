@@ -18,6 +18,7 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
 
     const [image, setImage] = useState<Image | null>(null);
     const [isImageScalable, setIsImageScalable] = useState(false);
+    const [widthWrapper, setWidthWrapper] = useState(0);
 
     const wrapperElementRef = useRef<HTMLDivElement | null>(null);
 
@@ -54,6 +55,9 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
                         const imageWidth = imageNew.width;
                         setImage({ url: dataURL, width: imageWidth });
                         const shouldScale = (imageWidth > (wrapperElementRef.current?.offsetWidth || 0)) || (imageNew.height > (wrapperElementRef.current?.offsetHeight || 0));
+                        if (shouldScale && wrapperElementRef.current) {
+                            setWidthWrapper(wrapperElementRef.current.offsetWidth * 40 / 100);
+                        }
                         setIsImageScalable(shouldScale);
                     };
                 }
@@ -83,7 +87,7 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
                             boxShadow: `rgb(0 0 0 / 35%) 0px ${settings.shadow + 15}px ${settings.shadow + 25}px`,
                             objectFit: "cover",
                             display: isImageScalable ? "inline-block" : "block",
-                            width: isImageScalable ? "300px" : "",
+                            width: isImageScalable ? `${widthWrapper}px` : "",
                             height: isImageScalable ? "auto" : "",
                         }}
                     />
