@@ -2,7 +2,7 @@
 
 import { ActionButton } from "@/components/ActionButton";
 import { ImageHandler } from "@/components/ImageHandler";
-import { Settings } from "@/components/Settings";
+import { SettingsImage } from "@/components/SettingsImage";
 import { useRef, useState } from "react";
 import * as htmlToImage from "html-to-image";
 import { Provider, useAtom } from "jotai";
@@ -63,7 +63,7 @@ export default function Home() {
       <div className="grid h-full">
         <div className="grid items-stretch gap-6 grid-cols-5">
           <div className="col-span-1 border">
-            <Settings listColor={settingColors}/>
+            <SettingsImage listColor={settingColors}/>
           </div>
           <div className="col-span-4 border">
             <ImageHandler domEl={domEl} />

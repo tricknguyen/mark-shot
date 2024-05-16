@@ -74,7 +74,7 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
     return <div className="p-4 h-[80vh] flex flex-col justify-center">
         <div id="wrapper" className="w-full flex-row items-center p-5 h-full flex justify-center" ref={wrapperElementRef}>
             <div style={image ? {
-                backgroundImage: settings.backgroundColor,
+                backgroundImage: `url(${settings.wallPaper})`,
                 padding: settings.padding ? settings.padding : 40,
             } : undefined} id="domEl" ref={domEl}>
                 {
