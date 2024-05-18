@@ -6,7 +6,7 @@ import { settingAtom } from "@/store/SettingStore";
 import { useRouter } from "next/navigation";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "./ui/input";
-import { ChangeEvent, useRef } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 
 interface SettingsProps {
     listColor?: Array<string>,
@@ -14,12 +14,13 @@ interface SettingsProps {
 
 export function SettingsImage({ listColor }: SettingsProps) {
     const [settings, setSettings] = useAtom(settingAtom);
+    const [wallPapers, setWallpapers] = useState<Array<string>>([]);
     const wrapperImg = useRef<HTMLInputElement>(null);
     const router = useRouter();
 
-    function onSelectColor(color: string) {
+    function onSelectBackground(background: string) {
         setSettings({
-            ...settings, backgroundColor: color
+            ...settings, background: background
         });
     }
 
@@ -41,7 +42,10 @@ export function SettingsImage({ listColor }: SettingsProps) {
         if (url) {
             const reader = new FileReader();
             reader.readAsDataURL(url);
-            reader.onloadend = () => setSettings({...settings, wallPaper: reader.result as string});
+            reader.onloadend = () => {
+                setSettings({ ...settings, background: reader.result as string });
+                setWallpapers([...wallPapers, reader.result as string]);
+            }
         }
     }
 
@@ -58,7 +62,7 @@ export function SettingsImage({ listColor }: SettingsProps) {
                                 className="w-[50px] h-[50px] mb-2"
                                 style={{ backgroundImage: color }}
                                 onClick={() => {
-                                    onSelectColor(color);
+                                    onSelectBackground(color);
                                 }}
                             />
                         </div>
@@ -86,6 +90,19 @@ export function SettingsImage({ listColor }: SettingsProps) {
                 Wallpapers
             </h3>
             <div className="grid grid-cols-5 pt-2">
+                {
+                    wallPapers?.map((wallpaper, index) => {
+                        return <div className="flex justify-center" key={index}>
+                            <Button
+                                className="w-[50px] h-[50px] mb-2"
+                                style={{ backgroundImage: `url(${wallpaper})` }}
+                                onClick={() => {
+                                    onSelectBackground(wallpaper);
+                                }}
+                            />
+                        </div>
+                    })
+                }
                 <div className="flex justify-center">
                     <Input ref={wrapperImg} type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                     <Button className="w-[50px] h-[50px] mb-2" variant="outline" size="icon" onClick={() => {
@@ -99,13 +116,13 @@ export function SettingsImage({ listColor }: SettingsProps) {
     }
 
     function handleRemovingImage() {
-        
+        //clear All Setting for image
     }
 
     return (
         <div className="py-4 px-2 lg:block">
             <div className="pb-2 border-b">
-                <Button className="w-full" onClick={handleRemovingImage}>None</Button>
+                <Button className="w-full" onClick={handleRemovingImage}>Clear Content</Button>
             </div>
 
             {renderGradientSetting()}

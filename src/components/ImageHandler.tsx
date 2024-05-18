@@ -14,7 +14,7 @@ interface Image {
 }
 
 export function ImageHandler({ domEl }: ImageHandlerProp) {
-    const [settings] = useAtom(settingAtom);
+    const [settings, setSettings] = useAtom(settingAtom);
 
     const [image, setImage] = useState<Image | null>(null);
     const [isImageScalable, setIsImageScalable] = useState(false);
@@ -22,12 +22,23 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
 
     const wrapperElementRef = useRef<HTMLDivElement | null>(null);
 
+    function isWallpaper(src?: string): boolean {
+        if (!src) {
+            return false;
+        } 
+        return src.includes("data");
+    }
+
     function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
         const url = event.target.files?.[0];
         if (url) {
             const reader = new FileReader();
             reader.readAsDataURL(url);
-            reader.onloadend = () => setImage({ url: reader.result as string });
+            reader.onloadend = () => { 
+                const source = reader.result as string;
+                setImage({ url: source }); 
+                setSettings({ ...settings, image: source });
+            }
         }
     }
 
@@ -59,6 +70,8 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
                             setWidthWrapper(wrapperElementRef.current.offsetWidth * 40 / 100);
                         }
                         setIsImageScalable(shouldScale);
+
+                        setSettings({ ...settings, image: dataURL });
                     };
                 }
             };
@@ -74,7 +87,7 @@ export function ImageHandler({ domEl }: ImageHandlerProp) {
     return <div className="p-4 h-[80vh] flex flex-col justify-center">
         <div id="wrapper" className="w-full flex-row items-center p-5 h-full flex justify-center" ref={wrapperElementRef}>
             <div style={image ? {
-                backgroundImage: `url(${settings.wallPaper})`,
+                backgroundImage: isWallpaper(settings?.background) ? `url(${settings.background})` : settings.background,
                 padding: settings.padding ? settings.padding : 40,
             } : undefined} id="domEl" ref={domEl}>
                 {
