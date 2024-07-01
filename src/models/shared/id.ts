@@ -1,0 +1,1 @@
+export type Id<T, Name> = T & { readonly __type: Name };
