@@ -71,7 +71,5 @@ const defaultValueLayout: Layout = {
     items: [],
     itemtype: "layout"
 };
+
 export const layoutStore = atom<Layout>(defaultValueLayout);
-
-
-

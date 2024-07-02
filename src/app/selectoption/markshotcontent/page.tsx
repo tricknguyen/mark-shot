@@ -23,28 +23,38 @@ function MainPage() {
     if (!container.items) {
       container.items = [];
     }
-    // if (itemToAdd.itemtype !== LayoutItemTypes.sectionItem) {
-    //   itemToAdd["containerId"] = container.id;
-    // }
-    // for (let i = 0; i < container.items.length; i++) {
-    //   const currentItem = container.items[i];
-    //   if (currentItem.id === containerSettings.siblingId) {
-    //     if (containerSettings.postInsert) {
-    //       container.items.splice(i + 1, 0, itemToAdd);
-    //       return;
-    //     }
-    //     else {
-    //       container.items.splice(i, 0, itemToAdd);
-    //       return;
-    //     }
-    //   }
-    // }
+    
+    for (let i = 0; i < container.items.length; i++) {
+      // const currentItem = container.items[i];
+      // if (currentItem.id === containerSettings.siblingId) {
+      //   if (containerSettings.postInsert) {
+      //     container.items.splice(i + 1, 0, itemToAdd);
+      //     return;
+      //   }
+      //   else {
+      //     container.items.splice(i, 0, itemToAdd);
+      //     return;
+      //   }
+      // }
+    }
     /*Default push the item to the end of the container*/
     container.items.push(itemToAdd);
   }
 
   function handleSelectItem(item: LayoutItem) {
+    const newItem: LayoutItem = {
+      ...item,
+      containerId: layout.id
+    };
 
+    setLayout((prevValue) => {
+      const newLayout = {...prevValue};
+      addItem(newItem, newLayout);
+      return newLayout;
+    });
+
+    console.log(layout);
+    
   }
 
   function addItem(itemToAdd: LayoutItem, container: LayoutItem) {
