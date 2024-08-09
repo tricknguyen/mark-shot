@@ -1,4 +1,4 @@
-import { Block } from "@/models"
+import { Block } from "@/types"
 
 interface TextBlockProps {
     contextBlock: Block
