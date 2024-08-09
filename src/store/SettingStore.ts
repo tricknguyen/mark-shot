@@ -1,5 +1,4 @@
-import { colors } from "@/models/GradientLibrary";
-import { SettingImage } from "@/models/Setting";
+import { colors, SettingImage } from "@/types";
 import { atom } from "jotai";
 
 export const settingAtom = atom({} as SettingImage);

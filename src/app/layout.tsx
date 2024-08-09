@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
-import icon from "../images/icon.png";
+import icon from "../public/images/icon.png";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";

@@ -1,0 +1,9 @@
+.border-selector-top {
+    @apply absolute top-[-23px] w-0 h-0 z-10;
+    left: calc(50% - 27px);
+}
+.border-selector-bot {
+    @apply absolute w-0 h-0 z-10;
+    top: calc(100% - 25px);
+    left: calc(100% / 2 - 27px);
+}

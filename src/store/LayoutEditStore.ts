@@ -1,5 +1,5 @@
-import { Block, ItemType, Layout, LayoutItem, Section } from "@/models";
-import { guid } from "@/models/shared";
+import { Block, ItemType, Layout, LayoutItem, Section } from "@/types";
+import { guid } from "@/types/shared";
 import { atom } from "jotai";
 
 export const IdDefaultSection = {
