@@ -3,109 +3,163 @@ import { useAtom } from "jotai";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { settingAtom } from "@/store/SettingStore";
+import { SettingImage } from "@/types";
 
-interface ImageHandlerProp {
-    domEl?: MutableRefObject<null>
+interface ImageHandlerProps {
+    domEl?: MutableRefObject<null>;
 }
 
-interface Image {
-    url?: string;
-    width?: number;
+interface ImageState {
+    url: string;
+    width: number;
+    height: number;
+    aspectRatio: number;
 }
 
-export function ImageHandler({ domEl }: ImageHandlerProp) {
+const useImageLoader = (wrapperRef: React.RefObject<HTMLDivElement>) => {
+    const [imageState, setImageState] = useState<ImageState | null>(null);
     const [settings, setSettings] = useAtom(settingAtom);
 
-    const [image, setImage] = useState<Image | null>(null);
-    const [isImageScalable, setIsImageScalable] = useState(false);
-    const [widthWrapper, setWidthWrapper] = useState(0);
+    const processImage = (dataUrl: string) => {
+        const img = new Image();
+        img.src = dataUrl;
+        img.onload = () => {
+            const aspectRatio = img.width / img.height;
+            const wrapperWidth = wrapperRef.current?.offsetWidth || 0;
+            const wrapperHeight = wrapperRef.current?.offsetHeight || 0;
 
-    const wrapperElementRef = useRef<HTMLDivElement | null>(null);
+            let finalWidth = img.width;
+            let finalHeight = img.height;
 
-    function isWallpaper(src?: string): boolean {
-        if (!src) {
-            return false;
-        } 
-        return src.includes("data");
-    }
-
-    function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
-        const url = event.target.files?.[0];
-        if (url) {
-            const reader = new FileReader();
-            reader.readAsDataURL(url);
-            reader.onloadend = () => { 
-                const source = reader.result as string;
-                setImage({ url: source }); 
-                setSettings({ ...settings, image: source });
+            if (img.width > wrapperWidth * 0.8 || img.height > wrapperHeight * 0.8) {
+                if (wrapperWidth / wrapperHeight > aspectRatio) {
+                    finalHeight = wrapperHeight * 0.8;
+                    finalWidth = finalHeight * aspectRatio;
+                } else {
+                    finalWidth = wrapperWidth * 0.8;
+                    finalHeight = finalWidth / aspectRatio;
+                }
             }
+
+            setImageState({
+                url: dataUrl,
+                width: finalWidth,
+                height: finalHeight,
+                aspectRatio
+            });
+            setSettings({ ...settings, image: dataUrl });
+        };
+    };
+
+    return { imageState, processImage };
+};
+
+const ImageDisplay = ({ 
+    imageState, 
+    settings, 
+    wrapperStyle 
+}: { 
+    imageState: ImageState;
+    settings: SettingImage;
+    wrapperStyle?: React.CSSProperties;
+}) => (
+    <img
+        src={imageState.url}
+        alt="Uploaded content"
+        style={{
+            width: imageState.width,
+            height: imageState.height,
+            borderRadius: `${settings.corner}px`,
+            boxShadow: `rgb(0 0 0 / 35%) 0px ${settings.shadow + 15}px ${settings.shadow + 25}px`,
+            objectFit: "contain",
+            ...wrapperStyle
+        }}
+    />
+);
+
+export function ImageHandler({ domEl }: ImageHandlerProps) {
+    const [settings] = useAtom(settingAtom);
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const { imageState, processImage } = useImageLoader(wrapperRef);
+
+    const handleFileInput = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = () => {
+                if (reader.result && typeof reader.result === 'string') {
+                    processImage(reader.result);
+                }
+            };
         }
-    }
+    };
 
-    function handlePaste(event: ClipboardEvent) {
-        if (!event.clipboardData || !event.clipboardData.items.length) {
-            return;
-        }
+    const handlePaste = (event: ClipboardEvent) => {
+        const items = event.clipboardData?.items;
+        if (!items) return;
 
-        const pastedItem = event.clipboardData.items[0];
-        if (pastedItem.type.indexOf("image") === -1) {
-            return; // Check for image type
-        }
+        const imageItem = Array.from(items).find(item => item.type.startsWith('image'));
+        if (!imageItem) return;
 
-        const blob = pastedItem.getAsFile();
-
+        const blob = imageItem.getAsFile();
         if (blob) {
             const reader = new FileReader();
             reader.readAsDataURL(blob);
             reader.onloadend = () => {
-                if (!image) {
-                    const dataURL = reader.result as string;
-                    const imageNew = new Image();
-                    imageNew.src = dataURL;
-                    imageNew.onload = () => {
-                        const imageWidth = imageNew.width;
-                        setImage({ url: dataURL, width: imageWidth });
-                        const shouldScale = (imageWidth > (wrapperElementRef.current?.offsetWidth || 0)) || (imageNew.height > (wrapperElementRef.current?.offsetHeight || 0));
-                        if (shouldScale && wrapperElementRef.current) {
-                            setWidthWrapper(wrapperElementRef.current.offsetWidth * 40 / 100);
-                        }
-                        setIsImageScalable(shouldScale);
-
-                        setSettings({ ...settings, image: dataURL });
-                    };
+                if (reader.result && typeof reader.result === 'string') {
+                    processImage(reader.result);
                 }
             };
         }
-    }
+    };
 
     useEffect(() => {
-        const handlePasteEvent = (event: ClipboardEvent) => handlePaste(event);
-        window.addEventListener("paste", handlePasteEvent);
-        return () => window.removeEventListener("paste", handlePasteEvent);
-    }, [wrapperElementRef, image]);
+        window.addEventListener("paste", handlePaste);
+        return () => window.removeEventListener("paste", handlePaste);
+    }, []);
 
-    return <div className="p-4 h-[80vh] flex flex-col justify-center">
-        <div id="wrapper" className="w-full flex-row items-center p-5 h-full flex justify-center" ref={wrapperElementRef}>
-            <div style={image ? {
-                backgroundImage: isWallpaper(settings?.background) ? `url(${settings.background})` : settings.background,
-                padding: settings.padding ? settings.padding : 40,
-            } : undefined} id="domEl" ref={domEl}>
-                {
-                    !image ? <>
-                        <Label htmlFor="inputImage">Picture</Label>
-                        <Input id="inputImage" type="file" accept="image/*" onChange={handleImageChange} />
-                    </> : <img id="image" src={image.url} alt="Picture of the author"
-                        style={{
-                            borderRadius: `${settings.corner}px`,
-                            boxShadow: `rgb(0 0 0 / 35%) 0px ${settings.shadow + 15}px ${settings.shadow + 25}px`,
-                            objectFit: "cover",
-                            display: isImageScalable ? "inline-block" : "block",
-                            width: isImageScalable ? `${widthWrapper}px` : "",
-                            height: isImageScalable ? "auto" : "",
-                        }}
-                    />
-                }
+    const wrapperStyle = {
+        backgroundImage: settings.background?.includes('data:') 
+            ? `url(${settings.background})` 
+            : settings.background,
+        padding: settings.padding || 40,
+    };
+
+    debugger;
+    return (
+        <div className="p-4 h-[80vh] flex flex-col justify-center">
+            <div 
+                className="w-full flex-row items-center p-5 h-full flex justify-center" 
+                ref={wrapperRef}
+            >
+                <div 
+                    id="domEl" 
+                    ref={domEl} 
+                    style={imageState ? wrapperStyle : undefined}
+                >
+                    {!imageState ? (
+                        <div className="flex flex-col gap-2">
+                            <Label htmlFor="inputImage">
+                                Drop an image here or paste from clipboard
+                            </Label>
+                            <Input
+                                id="inputImage"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileInput}
+                                className="cursor-pointer"
+                            />
+                        </div>
+                    ) : (
+                        <ImageDisplay
+                            imageState={imageState}
+                            settings={settings}
+                            wrapperStyle={wrapperStyle}
+                        />
+                    )}
+                </div>
             </div>
         </div>
-    </div>
+    );
 }

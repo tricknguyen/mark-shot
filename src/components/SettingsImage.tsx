@@ -1,158 +1,178 @@
 import { Slider } from "./ui/slider";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { Button } from "./ui/button";
 import { Plus } from "lucide-react";
 import { settingAtom } from "@/store/SettingStore";
 import { useRouter } from "next/navigation";
-import { Label } from "@radix-ui/react-label";
 import { Input } from "./ui/input";
 import { ChangeEvent, useRef, useState } from "react";
 
 interface SettingsProps {
-    listColor?: Array<string>,
+    listColor: Array<string>;
 }
+
+interface Settings {
+    background: string;
+    padding: number;
+    corner: number;
+    shadow: number;
+}
+
+const useImageUpload = () => {
+    const [wallPapers, setWallpapers] = useState<string[]>([]);
+    const [settings, setSettings] = useAtom(settingAtom);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = () => {
+            const imageUrl = reader.result as string;
+            setWallpapers(prev => [...prev, imageUrl]);
+            setSettings(prev => ({ ...prev, background: imageUrl }));
+        };
+    };
+
+    return { wallPapers, fileInputRef, handleImageChange };
+};
+
+const GradientSection = ({ listColor, onSelectBackground, onAddGradient }: {
+    listColor: string[];
+    onSelectBackground: (color: string) => void;
+    onAddGradient: () => void;
+}) => (
+    <div className="py-2 border-b">
+        <h3 className="font-semibold leading-none tracking-tight">Gradient</h3>
+        <div className="grid grid-cols-5 pt-2">
+            {listColor.map((color, index) => (
+                <div key={index} className="flex justify-center">
+                    <Button
+                        className="w-[50px] h-[50px] mb-2"
+                        style={{ backgroundImage: color }}
+                        onClick={() => onSelectBackground(color)}
+                    />
+                </div>
+            ))}
+            <div className="flex justify-center">
+                <Button
+                    className="w-[50px] h-[50px] mb-2"
+                    variant="outline"
+                    size="icon"
+                    onClick={onAddGradient}
+                >
+                    <Plus />
+                </Button>
+            </div>
+        </div>
+    </div>
+);
+
+const WallpaperSection = ({ wallPapers, onSelectBackground, fileInputRef, onAddWallpaper }: {
+    wallPapers: string[];
+    onSelectBackground: (url: string) => void;
+    fileInputRef: React.RefObject<HTMLInputElement>;
+    onAddWallpaper: () => void;
+}) => (
+    <div className="py-2 border-b">
+        <h3 className="font-semibold leading-none tracking-tight">Wallpapers</h3>
+        <div className="grid grid-cols-5 pt-2">
+            {wallPapers.map((wallpaper, index) => (
+                <div className="flex justify-center" key={index}>
+                    <Button
+                        className="w-[50px] h-[50px] mb-2"
+                        style={{ backgroundImage: `url(${wallpaper})` }}
+                        onClick={() => onSelectBackground(wallpaper)}
+                    />
+                </div>
+            ))}
+            <div className="flex justify-center">
+                <Input 
+                    ref={fileInputRef} 
+                    type="file" 
+                    accept="image/*" 
+                    className="hidden" 
+                />
+                <Button 
+                    className="w-[50px] h-[50px] mb-2" 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={onAddWallpaper}
+                >
+                    <Plus />
+                </Button>
+            </div>
+        </div>
+    </div>
+);
 
 export function SettingsImage({ listColor }: SettingsProps) {
     const [settings, setSettings] = useAtom(settingAtom);
-    const [wallPapers, setWallpapers] = useState<Array<string>>([]);
-    const wrapperImg = useRef<HTMLInputElement>(null);
     const router = useRouter();
+    const { wallPapers, fileInputRef, handleImageChange } = useImageUpload();
 
-    function onSelectBackground(background: string) {
-        setSettings({
-            ...settings, background: background
-        });
-    }
+    const updateSetting = (key: keyof Settings, value: number | string) => {
+        setSettings(prev => ({ ...prev, [key]: value }));
+    };
 
-    function onSelectPadding(val: number) {
-        setSettings({ ...settings, padding: val });
-    }
-
-    function onSelectCorner(val: number) {
-        setSettings({ ...settings, corner: val });
-    }
-
-    function onSelectShadow(val: number) {
-        setSettings({ ...settings, shadow: val });
-    }
-
-    function handleImageChange(event: ChangeEvent<HTMLInputElement>) {
-        console.log(event);
-        const url = event.target.files?.[0];
-        if (url) {
-            const reader = new FileReader();
-            reader.readAsDataURL(url);
-            reader.onloadend = () => {
-                setSettings({ ...settings, background: reader.result as string });
-                setWallpapers([...wallPapers, reader.result as string]);
-            }
-        }
-    }
-
-    function renderGradientSetting() {
-        return <div className="py-2 border-b">
-            <h3 className="font-semibold leading-none tracking-tight">
-                Gradient
-            </h3>
-            <div className="grid grid-cols-5 pt-2">
-                {
-                    listColor?.map((color, key) => {
-                        return <div key={key} className="flex justify-center">
-                            <Button
-                                className="w-[50px] h-[50px] mb-2"
-                                style={{ backgroundImage: color }}
-                                onClick={() => {
-                                    onSelectBackground(color);
-                                }}
-                            />
-                        </div>
-                    })
-                }
-                <div className="flex justify-center">
-                    <Button
-                        className="w-[50px] h-[50px] mb-2"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => {
-                            router.push("/settingcolor");
-                        }}
-                    >
-                        <Plus />
-                    </Button>
-                </div>
-            </div>
-        </div>
-    }
-
-    function renderWallPaperSetting() {
-        return <div className="py-2 border-b">
-            <h3 className="font-semibold leading-none tracking-tight">
-                Wallpapers
-            </h3>
-            <div className="grid grid-cols-5 pt-2">
-                {
-                    wallPapers?.map((wallpaper, index) => {
-                        return <div className="flex justify-center" key={index}>
-                            <Button
-                                className="w-[50px] h-[50px] mb-2"
-                                style={{ backgroundImage: `url(${wallpaper})` }}
-                                onClick={() => {
-                                    onSelectBackground(wallpaper);
-                                }}
-                            />
-                        </div>
-                    })
-                }
-                <div className="flex justify-center">
-                    <Input ref={wrapperImg} type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
-                    <Button className="w-[50px] h-[50px] mb-2" variant="outline" size="icon" onClick={() => {
-                        wrapperImg.current?.click();
-                    }}>
-                        <Plus />
-                    </Button>
-                </div>
-            </div>
-        </div>
-    }
-
-    function handleRemovingImage() {
-        //clear All Setting for image
-    }
+    const handleRemovingImage = () => {
+        setSettings(prev => ({
+            ...prev,
+            background: '',
+            padding: 0,
+            corner: 0,
+            shadow: 0
+        }));
+    };
 
     return (
         <div className="py-4 px-2 lg:block">
             <div className="pb-2 border-b">
-                <Button className="w-full" onClick={handleRemovingImage}>Clear Content</Button>
+                <Button className="w-full" onClick={handleRemovingImage}>
+                    Clear Content
+                </Button>
             </div>
 
-            {renderGradientSetting()}
+            <GradientSection
+                listColor={listColor}
+                onSelectBackground={(color) => updateSetting('background', color)}
+                onAddGradient={() => router.push("/settingcolor")}
+            />
 
-            {renderWallPaperSetting()}
+            <WallpaperSection
+                wallPapers={wallPapers}
+                onSelectBackground={(url) => updateSetting('background', url)}
+                fileInputRef={fileInputRef}
+                onAddWallpaper={() => fileInputRef.current?.click()}
+            />
 
-            <div className="pt-2 pb-3 border-b">
-                <h3 className="font-semibold leading-none tracking-tight mb-3">
-                    Padding
-                </h3>
-                <Slider defaultValue={[0]} max={300} step={1} onValueChange={(val) => {
-                    onSelectPadding(val[0]);
-                }} />
-            </div>
+            <Input 
+                ref={fileInputRef} 
+                type="file" 
+                accept="image/*" 
+                onChange={handleImageChange}
+                className="hidden" 
+            />
 
-            <div className="pt-2 pb-3 border-b">
-                <h3 className="font-semibold leading-none tracking-tight mb-3">
-                    Corner
-                </h3>
-                <Slider defaultValue={[0]} max={100} step={1} onValueChange={(val) => {
-                    onSelectCorner(val[0]);
-                }} />
-            </div>
-
-            <div className="pt-2 pb-3 border-b">
-                <h3 className="font-semibold leading-none tracking-tight mb-3">Shadow</h3>
-                <Slider defaultValue={[0]} max={100} step={1} onValueChange={(val) => {
-                    onSelectShadow(val[0]);
-                }} />
-            </div>
+            {[
+                { label: 'Padding', max: 300, key: 'padding' as const },
+                { label: 'Corner', max: 100, key: 'corner' as const },
+                { label: 'Shadow', max: 100, key: 'shadow' as const }
+            ].map(({ label, max, key }) => (
+                <div key={key} className="pt-2 pb-3 border-b">
+                    <h3 className="font-semibold leading-none tracking-tight mb-3">
+                        {label}
+                    </h3>
+                    <Slider
+                        defaultValue={[0]}
+                        max={max}
+                        step={1}
+                        onValueChange={([value]) => updateSetting(key, value)}
+                    />
+                </div>
+            ))}
         </div>
     );
 }

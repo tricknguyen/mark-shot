@@ -3,7 +3,7 @@
 import { ItemType, LayoutItem } from "@/types";
 import { useCallback } from "react";
 import GeneralSetting from "./setting";
-import "../../../styles/markshotcontent.css";
+import "../../styles/markshotcontent.css";
 import { LayoutItemSelector } from "@/components/layoutrender/LayoutItemSelector";
 import { LayoutSectionRenderer } from "@/components/layoutrender/LayoutSectionRenderer";
 import useLayoutUpdater from "@/hooks/useLayoutUpdater";

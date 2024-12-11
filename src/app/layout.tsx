@@ -20,7 +20,7 @@ export default function RootLayout({children }: Readonly<{children: React.ReactN
       <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
         <body>
           <main className="h-[100vh]">
-            <header className="py-2 pl-4 md:pl-6 pr-4 border-b flex flex-wrap gap-4 items-center justify-between w-full max-w-[2250px] mx-auto">
+            {/* <header className="py-2 pl-4 md:pl-6 pr-4 border-b flex flex-wrap gap-4 items-center justify-between w-full max-w-[2250px] mx-auto">
               <div className="flex gap-2 items-center">
                 <Image src={icon} alt="Main Icon" width={40} height={40} />
                 <h1 className="text-base-content text-lg font-bold">MarkShot</h1>
@@ -32,10 +32,10 @@ export default function RootLayout({children }: Readonly<{children: React.ReactN
                   </Link>
                 </Button>
               </div>
-            </header>
-            <div className="px-8 pb-6">
+            </header> */}
+            {/* <div className="px-8 pb-6"> */}
               {children}
-            </div>
+            {/* </div> */}
           </main>
         </body>
       </html>
