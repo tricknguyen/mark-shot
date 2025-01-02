@@ -1,7 +1,7 @@
 export interface SettingImage {
 	background?: string,
 	image: string,
-	padding?: number,
+	size?: number,
 	corner?: number,
 	shadow: number
 }

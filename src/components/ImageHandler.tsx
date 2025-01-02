@@ -1,5 +1,5 @@
 import { ChangeEvent, MutableRefObject, useEffect, useRef, useState } from "react";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { settingAtom } from "@/store/SettingStore";
@@ -19,6 +19,12 @@ interface ImageState {
 const useImageLoader = (wrapperRef: React.RefObject<HTMLDivElement>) => {
     const [imageState, setImageState] = useState<ImageState | null>(null);
     const [settings, setSettings] = useAtom(settingAtom);
+
+    useEffect(() => {
+        if (!settings.image) {
+            setImageState(null);
+        }
+    }, [settings.image]);
 
     const processImage = (dataUrl: string) => {
         const img = new Image();
@@ -47,38 +53,47 @@ const useImageLoader = (wrapperRef: React.RefObject<HTMLDivElement>) => {
                 height: finalHeight,
                 aspectRatio
             });
-            setSettings({ ...settings, image: dataUrl });
+            setSettings(prev => ({ ...prev, image: dataUrl }));
         };
     };
 
     return { imageState, processImage };
 };
 
-const ImageDisplay = ({ 
-    imageState, 
-    settings, 
-    wrapperStyle 
-}: { 
+const ImageDisplay = ({
+    imageState,
+    settings
+}: {
     imageState: ImageState;
     settings: SettingImage;
-    wrapperStyle?: React.CSSProperties;
-}) => (
-    <img
-        src={imageState.url}
-        alt="Uploaded content"
-        style={{
-            width: imageState.width,
-            height: imageState.height,
-            borderRadius: `${settings.corner}px`,
-            boxShadow: `rgb(0 0 0 / 35%) 0px ${settings.shadow + 15}px ${settings.shadow + 25}px`,
-            objectFit: "contain",
-            ...wrapperStyle
-        }}
-    />
-);
+}) => {
+    const containerStyle: React.CSSProperties = {
+        width: imageState.width,
+        height: imageState.height,
+        transform: `scale(${settings.size ? settings.size / 100 : 1}) translate(0%, 0%) rotate(0deg)`
+    };
+
+    const imageStyle: React.CSSProperties = {
+        width: '100%',
+        height: '100%',
+        objectFit: 'contain',
+        borderRadius: `${settings.corner}px`,
+        boxShadow: `rgb(0 0 0 / 35%) 0px ${settings.shadow + 15}px ${settings.shadow + 25}px`,
+    };
+
+    return (
+        <div style={containerStyle}>
+            <img
+                src={imageState.url}
+                alt="Uploaded content"
+                style={imageStyle}
+            />
+        </div>
+    );
+};
 
 export function ImageHandler({ domEl }: ImageHandlerProps) {
-    const [settings] = useAtom(settingAtom);
+    const settings = useAtomValue(settingAtom);
     const wrapperRef = useRef<HTMLDivElement>(null);
     const { imageState, processImage } = useImageLoader(wrapperRef);
 
@@ -119,24 +134,21 @@ export function ImageHandler({ domEl }: ImageHandlerProps) {
         return () => window.removeEventListener("paste", handlePaste);
     }, []);
 
-    const wrapperStyle = {
-        backgroundImage: settings.background?.includes('data:') 
-            ? `url(${settings.background})` 
-            : settings.background,
-        padding: settings.padding || 40,
-    };
-
-    debugger;
     return (
-        <div className="p-4 h-[80vh] flex flex-col justify-center">
-            <div 
-                className="w-full flex-row items-center p-5 h-full flex justify-center" 
+        <div className="p-4 h-[80vh] flex flex-col justify-center"
+            id="domEl"
+            ref={domEl}>
+            <div
+                className="w-full flex-row items-center p-5 h-full flex justify-center" style={{
+                    backgroundImage: settings.background?.includes('data:')
+                        ? `url(${settings.background})`
+                        : settings.background,
+                }}
                 ref={wrapperRef}
             >
-                <div 
-                    id="domEl" 
-                    ref={domEl} 
-                    style={imageState ? wrapperStyle : undefined}
+                <div
+
+                    className="flex items-center justify-center"
                 >
                     {!imageState ? (
                         <div className="flex flex-col gap-2">
@@ -155,7 +167,6 @@ export function ImageHandler({ domEl }: ImageHandlerProps) {
                         <ImageDisplay
                             imageState={imageState}
                             settings={settings}
-                            wrapperStyle={wrapperStyle}
                         />
                     )}
                 </div>

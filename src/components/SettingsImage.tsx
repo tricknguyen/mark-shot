@@ -6,21 +6,15 @@ import { settingAtom } from "@/store/SettingStore";
 import { useRouter } from "next/navigation";
 import { Input } from "./ui/input";
 import { ChangeEvent, useRef, useState } from "react";
+import { SettingImage } from "@/types";
 
 interface SettingsProps {
     listColor: Array<string>;
 }
 
-interface Settings {
-    background: string;
-    padding: number;
-    corner: number;
-    shadow: number;
-}
-
 const useImageUpload = () => {
     const [wallPapers, setWallpapers] = useState<string[]>([]);
-    const [settings, setSettings] = useAtom(settingAtom);
+    const setSettings = useSetAtom(settingAtom);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -113,7 +107,7 @@ export function SettingsImage({ listColor }: SettingsProps) {
     const router = useRouter();
     const { wallPapers, fileInputRef, handleImageChange } = useImageUpload();
 
-    const updateSetting = (key: keyof Settings, value: number | string) => {
+    const updateSetting = (key: keyof SettingImage, value: number | string) => {
         setSettings(prev => ({ ...prev, [key]: value }));
     };
 
@@ -121,6 +115,8 @@ export function SettingsImage({ listColor }: SettingsProps) {
         setSettings(prev => ({
             ...prev,
             background: '',
+            image: '',
+            size: 100,
             padding: 0,
             corner: 0,
             shadow: 0
@@ -157,7 +153,7 @@ export function SettingsImage({ listColor }: SettingsProps) {
             />
 
             {[
-                { label: 'Padding', max: 300, key: 'padding' as const },
+                { label: 'Size', max: 300, key: 'size' as const },
                 { label: 'Corner', max: 100, key: 'corner' as const },
                 { label: 'Shadow', max: 100, key: 'shadow' as const }
             ].map(({ label, max, key }) => (
@@ -169,7 +165,7 @@ export function SettingsImage({ listColor }: SettingsProps) {
                         defaultValue={[0]}
                         max={max}
                         step={1}
-                        onValueChange={([value]) => updateSetting(key, value)}
+                        onValueChange={([value]) => updateSetting(key as keyof SettingImage, value)}
                     />
                 </div>
             ))}
