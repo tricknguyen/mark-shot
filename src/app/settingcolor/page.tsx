@@ -63,15 +63,17 @@ function ColorPicker({ modelValue, onUpdatedModelValue }: ColorPickerProps) {
 
 export default function Page() {
     const router = useRouter();
-    const [colorsBase, setColorsBase] = useState<{
-        [key: string]: any
-    }>({
+    const defaultValueColorBase = {
         firstColor: "",
         secondColor: "",
         thirdColor: "",
         fourthColor: "",
         fifthColor: ""
-    });
+    }
+
+    const [colorsBase, setColorsBase] = useState<{
+        [key: string]: any
+    }>(defaultValueColorBase);
 
     const [gradientColor, setGradientColor] = useState("");
 
@@ -82,16 +84,26 @@ export default function Page() {
             ...colorsBase,
             [key]: val
         });
-        
-        const values = Object.values({...colorsBase, [key]: val}).filter((color) => color !== "");
+
+        const values = Object.values({ ...colorsBase, [key]: val }).filter((color) => color !== "");
         setGradientColor(Utils.generateGradient(values));
+    }
+
+    function handleSave() {
+        setSettingColors([...settingColors, gradientColor]);
+        router.back();
+    }
+
+    function handleCancel() {
+        setGradientColor("");
+        setColorsBase(defaultValueColorBase);
     }
 
     function renderColor() {
         return <div
             className="h-full m-2 p-2 rounded-3xl border-8 border-slate-500"
             style={{
-                minHeight: "min(860px, 100vh - 40px)",
+                minHeight: "min(860px, 85vh - 40px)",
                 background: gradientColor
             }}
         />;
@@ -134,8 +146,7 @@ export default function Page() {
             <header className="p-4">
                 <div className="flex items-center">
                     <Button variant="outline" className="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800" onClick={() => {
-                        setSettingColors([...settingColors, gradientColor]);
-                        router.push("./");
+                       router.back();
                     }}>
                         <ChevronLeft />
                     </Button>
@@ -143,9 +154,13 @@ export default function Page() {
                 </div>
             </header>
 
-            <div className="p-4 grid grid-cols-2 gap-9 max-w-[1200px] container">
+            <div className="p-4 grid grid-cols-2 gap-9 container">
                 {renderColor()}
                 {renderSetting()}
+            </div>
+            <div className="flex justify-end gap-2">
+                <Button onClick={handleSave}>Save</Button>
+                <Button variant="outline" onClick={handleCancel}>Cancel</Button>
             </div>
         </div>
     )

@@ -134,7 +134,7 @@ export function SettingsImage({ listColor }: SettingsProps) {
             <GradientSection
                 listColor={listColor}
                 onSelectBackground={(color) => updateSetting('background', color)}
-                onAddGradient={() => router.push("/settingcolor")}
+                onAddGradient={() => router.push("./settingcolor")}
             />
 
             <WallpaperSection
