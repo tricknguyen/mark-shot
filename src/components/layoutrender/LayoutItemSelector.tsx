@@ -1,7 +1,7 @@
 import { ItemType, LayoutItem } from "@/types"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { Plus, Type } from "lucide-react";
+import { BookImage, Plus } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 import { defaultSelections, IdDefaultSection } from "@/store";
 
@@ -84,7 +84,7 @@ export function LayoutItemSelector({ small, contextItem, onSelectItem }: LayoutI
                                             onSelectItem?.(item);
                                         }}>
                                             <div className="flex flex-col items-center p-4 bg-gray-900 rounded-md cursor-pointer">
-                                                <Type className="text-white" />
+                                                <BookImage className="text-white" />
                                                 <span className="text-white">{item.title}</span>
                                             </div>
                                         </div>

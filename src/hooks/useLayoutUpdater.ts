@@ -28,7 +28,6 @@ const useLayoutUpdater = () => {
     }, [addItemAtCorrectSibling]);
 
     const handleSelectItem = useCallback((item: LayoutItem, containerId?: string): void => {
-        debugger;
         const newItem: LayoutItem = {
             ...item,
             containerId: containerId ? containerId : layout.id

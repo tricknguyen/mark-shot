@@ -9,16 +9,16 @@ export const IdDefaultSection = {
 }
 
 export const defaultSelections = [
-    {
-        title: "1 Column",
-        id: IdDefaultSection.OneColumn,
-        itemtype: ItemType.Section,
-        items: [{
-            id: guid(),
-            itemtype: "sectionItem",
-            items: [] as Array<LayoutItem>
-        }]
-    } as Section,
+    // {
+    //     title: "1 Column",
+    //     id: IdDefaultSection.OneColumn,
+    //     itemtype: ItemType.Section,
+    //     items: [{
+    //         id: guid(),
+    //         itemtype: ItemType.Section,
+    //         items: [] as Array<LayoutItem>
+    //     }]
+    // } as Section,
     {
         title: "2 Column",
         id: IdDefaultSection.TwoColumn,
@@ -26,12 +26,12 @@ export const defaultSelections = [
         items: [
             {
                 id: guid(),
-                itemtype: "sectionItem",
+                itemtype: ItemType.Section,
                 items: [] as Array<LayoutItem>
             },
             {
                 id: guid(),
-                itemtype: "sectionItem",
+                itemtype: ItemType.Section,
                 items: [] as Array<LayoutItem>
             }
         ]
@@ -43,23 +43,23 @@ export const defaultSelections = [
         items: [
             {
                 id: guid(),
-                itemtype: "sectionItem",
+                itemtype: ItemType.Section,
                 items: [] as Array<LayoutItem>
             },
             {
                 id: guid(),
-                itemtype: "sectionItem",
+                itemtype: ItemType.Section,
                 items: [] as Array<LayoutItem>
             },
             {
                 id: guid(),
-                itemtype: "sectionItem",
+                itemtype: ItemType.Section,
                 items: [] as Array<LayoutItem>
             }
         ]
     } as Section,
     {
-        title: "Text",
+        title: "Image",
         id: guid(),
         itemtype: ItemType.Block
     } as Block,
