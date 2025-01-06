@@ -76,6 +76,7 @@ export default function Page() {
     }>(defaultValueColorBase);
 
     const [gradientColor, setGradientColor] = useState("");
+    const [isRotating, setIsRotating] = useState(false);
 
     const [settingColors, setSettingColors] = useAtom(colorSettings);
 
@@ -87,6 +88,29 @@ export default function Page() {
 
         const values = Object.values({ ...colorsBase, [key]: val }).filter((color) => color !== "");
         setGradientColor(Utils.generateGradient(values));
+    }
+
+    function generateRandomHexColor() {
+        return '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+    }
+
+    function handleRandomGradient() {
+        setIsRotating(true);
+        
+        const newColors = {
+            firstColor: generateRandomHexColor(),
+            secondColor: generateRandomHexColor(),
+            thirdColor: Math.random() > 0.5 ? generateRandomHexColor() : "",
+            fourthColor: Math.random() > 0.7 ? generateRandomHexColor() : "",
+            fifthColor: Math.random() > 0.9 ? generateRandomHexColor() : ""
+        };
+
+        setColorsBase(newColors);
+        
+        const values = Object.values(newColors).filter(color => color !== "");
+        setGradientColor(Utils.generateGradient(values));
+
+        setTimeout(() => setIsRotating(false), 1000);
     }
 
     function handleSave() {
@@ -112,7 +136,13 @@ export default function Page() {
     function renderSetting() {
         return <div>
             <header className="flex flex-col items-center">
-                <Button variant="outline" size="icon">
+                <Button 
+                    variant="outline" 
+                    size="icon"
+                    onClick={handleRandomGradient}
+                    className={isRotating ? 'animate-[spin_1s_ease-in-out]' : ''}
+                    disabled={isRotating}
+                >
                     <Dices className="h-[32px]" />
                 </Button>
                 <h1 className="text-3xl text-amber-200 font-semibold">Gradient Generator</h1>

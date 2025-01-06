@@ -6,6 +6,9 @@ import { useRef } from "react";
 import { ActionButton } from "@/components";
 import dynamic from 'next/dynamic';
 import { Skeleton } from "@/components/ui/skeleton";
+import { ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 const LoadingPanel = () => (
     <div className="p-4">
@@ -40,6 +43,7 @@ const SettingsImage = dynamic(() => import('@/components/SettingsImage').then(mo
 export default function Home() {
     const domEl = useRef(null);
     const [settingColors] = useAtom(colorSettings);
+    const router = useRouter();
   
     const fetchImageData = async (imageUrl: string) => {
         const response = await fetch(imageUrl);
@@ -77,6 +81,13 @@ export default function Home() {
   
     return (
         <Provider>
+            <Button 
+                variant="outline" 
+                className="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800" 
+                onClick={() => router.back()}
+            >
+                <ChevronLeft />
+            </Button>
             <div className="grid h-full">
                 <div className="grid items-stretch gap-6 grid-cols-5">
                     <div className="col-span-1 border">
