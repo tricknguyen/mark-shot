@@ -3,21 +3,16 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { settingAtom } from "@/store/SettingStore";
-import { SettingImage } from "@/types";
+import { ImageBg, SettingImage } from "@/types";
 
 interface ImageHandlerProps {
     domEl?: MutableRefObject<null>;
 }
 
-interface ImageState {
-    url: string;
-    width: number;
-    height: number;
-    aspectRatio: number;
-}
+
 
 const useImageLoader = (wrapperRef: React.RefObject<HTMLDivElement>) => {
-    const [imageState, setImageState] = useState<ImageState | null>(null);
+    const [imageState, setImageState] = useState<ImageBg | null>(null);
     const [settings, setSettings] = useAtom(settingAtom);
 
     useEffect(() => {
@@ -64,7 +59,7 @@ const ImageDisplay = ({
     imageState,
     settings
 }: {
-    imageState: ImageState;
+    imageState: ImageBg;
     settings: SettingImage;
 }) => {
     const containerStyle: React.CSSProperties = {

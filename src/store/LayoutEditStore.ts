@@ -1,5 +1,5 @@
-import { Block, ItemType, Layout, LayoutItem, Section } from "@/types";
-import { guid } from "@/types/shared";
+import { Block, BlockType, ItemType, Layout, LayoutItem, Section } from "@/types";
+import { emptyGuid, guid } from "@/types/shared";
 import { atom } from "jotai";
 
 export const IdDefaultSection = {
@@ -9,16 +9,6 @@ export const IdDefaultSection = {
 }
 
 export const defaultSelections = [
-    // {
-    //     title: "1 Column",
-    //     id: IdDefaultSection.OneColumn,
-    //     itemtype: ItemType.Section,
-    //     items: [{
-    //         id: guid(),
-    //         itemtype: ItemType.Section,
-    //         items: [] as Array<LayoutItem>
-    //     }]
-    // } as Section,
     {
         title: "2 Column",
         id: IdDefaultSection.TwoColumn,
@@ -61,7 +51,8 @@ export const defaultSelections = [
     {
         title: "Image",
         id: guid(),
-        itemtype: ItemType.Block
+        itemtype: ItemType.Block,
+        blockType: BlockType.Image,
     } as Block,
 ] as Array<LayoutItem>;
 
@@ -73,3 +64,5 @@ const defaultValueLayout: Layout = {
 };
 
 export const layoutStore = atom<Layout>(defaultValueLayout);
+
+export const idSelecting = atom<guid>(emptyGuid);
