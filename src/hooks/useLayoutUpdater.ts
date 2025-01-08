@@ -1,5 +1,5 @@
 import { layoutStore } from "@/store";
-import { Layout, LayoutItem } from "@/types";
+import { Block, Layout, LayoutItem } from "@/types";
 import { useAtom } from "jotai";
 import { useCallback } from "react";
 
@@ -40,9 +40,33 @@ const useLayoutUpdater = () => {
 
     }, [layout.id, addItem, setLayout]);
 
+    const handleUpdateBlockSettings = (updatedBlock: Block) => {
+        setLayout((prevLayout) => {
+            const newLayout = { ...prevLayout };
+            const updateBlockInItems = (items: LayoutItem[]): LayoutItem[] => {
+                return items.map(item => {
+                    if (item.id === updatedBlock.id) {
+                        return updatedBlock;
+                    }
+                    if (item.items?.length) {
+                        return {
+                            ...item,
+                            items: updateBlockInItems(item.items)
+                        };
+                    }
+                    return item;
+                });
+            };
+            
+            newLayout.items = updateBlockInItems(newLayout.items);
+            return newLayout;
+        });
+    };
+
     return {
         layout,
         handleSelectItem,
+        handleUpdateBlockSettings
     };
 };
 

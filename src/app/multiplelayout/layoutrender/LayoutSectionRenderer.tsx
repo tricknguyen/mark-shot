@@ -1,6 +1,5 @@
 import { LayoutItem } from "@/types"
 import { LayoutColumnRenderer } from "./LayoutColumnRenderer";
-import { LayoutSelectionEditor } from "./LayoutSelectionEditor";
 
 interface LayoutSectionRendererProps {
     value?: LayoutItem
@@ -16,6 +15,6 @@ export function LayoutSectionRenderer({ value }: LayoutSectionRendererProps) {
                 return <LayoutColumnRenderer value={column} key={index} />
             })
         }
-        <LayoutSelectionEditor />
+        {/* <LayoutSelectionEditor /> */}
     </div>;
 }

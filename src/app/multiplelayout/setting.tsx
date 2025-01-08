@@ -9,7 +9,7 @@ import { guid } from "@/types/shared";
 import { SettingsBlock } from "./blocks/image";
 
 export default function GeneralSetting() {
-    const { layout, handleSelectItem } = useLayoutUpdater();
+    const { layout, handleUpdateBlockSettings } = useLayoutUpdater();
     const idSelect = useAtomValue(idSelecting);
 
     const findSelectedBlock = useCallback(() => {
@@ -31,12 +31,14 @@ export default function GeneralSetting() {
 
     const handleUpdateSettings = (settings: SettingImageBlock) => {
         const selectedBlock = findSelectedBlock();
-        if (selectedBlock) {
+        if (selectedBlock && selectedBlock.containerId) {
             const updatedBlock = {
                 ...selectedBlock,
-                settings
+                settings: {
+                    ...settings
+                }
             };
-            handleSelectItem(updatedBlock, selectedBlock.containerId);
+            handleUpdateBlockSettings(updatedBlock);
         }
     };
 

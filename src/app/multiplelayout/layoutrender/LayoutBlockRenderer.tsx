@@ -26,7 +26,7 @@ export function LayoutBlockRenderer({ value }: LayoutBlockRendererProps) {
         }
     }    
 
-    return <div onClick={() => {
+    return <div id={value.id} onClick={() => {
         setIdSelectingSetting(value.id);
     }}>
         {renderBlock(value)}
